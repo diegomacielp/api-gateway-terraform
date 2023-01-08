@@ -46,3 +46,19 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 ]
 TASK_DEFINITION
 }
+
+resource "aws_ecs_service" "ecs_service" {
+  name                               = "service-${var.project_name}"
+  cluster                            = aws_ecs_cluster.ecs_cluster.id
+  task_definition                    = aws_ecs_task_definition.ecs_task_definition.arn
+  desired_count                      = 1
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
+  launch_type                        = "FARGATE"
+  scheduling_strategy                = "REPLICA"
+  network_configuration {
+    security_groups  = [aws_security_group.security_group_ecs.id]
+    subnets          = [for s in data.aws_subnet.subnet : s.id]
+    assign_public_ip = true
+  }
+}
