@@ -8,7 +8,7 @@ resource "aws_security_group" "security_group_ecs" {
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
   }
   egress {
     from_port        = 0
