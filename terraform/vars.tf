@@ -1,6 +1,5 @@
 variable "aws_id" {
   type    = string
-  default = "975356299930"
 }
 
 variable "aws_region" {
