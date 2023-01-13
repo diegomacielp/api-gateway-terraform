@@ -1,5 +1,6 @@
 variable "aws_id" {
   type    = string
+  default = 
 }
 
 variable "aws_region" {
@@ -10,4 +11,9 @@ variable "aws_region" {
 variable "project_name" {
   type    = string
   default = "api-gateway"
+}
+
+variable "project_port" {
+  type    = string
+  default = "3000"
 }

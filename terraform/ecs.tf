@@ -13,36 +13,36 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_providers" {
 }
 
 resource "aws_ecs_task_definition" "ecs_task_definition" {
-  network_mode = "awsvpc"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  family = "task-${var.project_name}"
-  cpu = 256
-  memory = 512
+  family                   = "task-${var.project_name}"
+  cpu                      = 256
+  memory                   = 512
   execution_role_arn       = "arn:aws:iam::${var.aws_id}:role/ecsTaskExecutionRole"
   task_role_arn            = "arn:aws:iam::${var.aws_id}:role/ecsTaskExecutionRole"
   container_definitions    = <<TASK_DEFINITION
 [
-    {
-        "name": "${var.project_name}",
-        "image": "${docker_image.docker.name}",
-        "essential": true,
-        "portMappings":
-        [
-            {
-                "protocol": "tcp",
-                "containerPort": 3000,
-                "hostPort": 3000
-            }
-        ],
-        "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-            "awslogs-group": "${aws_cloudwatch_log_group.cloudwatch_log_group.id}",
-            "awslogs-region": "${var.aws_region}",
-            "awslogs-stream-prefix": "ecs"
-        }
+  {
+    "name": "${var.project_name}",
+    "image": "${docker_image.docker.name}",
+    "essential": true,
+    "portMappings":
+    [
+      {
+        "protocol": "tcp",
+        "containerPort": 3000,
+        "hostPort": 3000
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${aws_cloudwatch_log_group.cloudwatch_log_group.id}",
+        "awslogs-region": "${var.aws_region}",
+        "awslogs-stream-prefix": "ecs"
       }
     }
+  }
 ]
 TASK_DEFINITION
 }
@@ -60,5 +60,10 @@ resource "aws_ecs_service" "ecs_service" {
     security_groups  = [aws_security_group.security_group_ecs.id]
     subnets          = [for s in data.aws_subnet.subnet : s.id]
     assign_public_ip = true
+  }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.lb_target_group.id
+    container_name   = var.project_name
+    container_port   = var.project_port
   }
 }
