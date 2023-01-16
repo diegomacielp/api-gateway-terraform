@@ -5,8 +5,8 @@ resource "aws_security_group" "security_group_ecs" {
 
   ingress {
     description = "External access"
-    from_port   = 3000
-    to_port     = 3000
+    from_port   = var.project_port
+    to_port     = var.project_port
     protocol    = "tcp"
     cidr_blocks = [data.aws_vpc.default.cidr_block]
   }
